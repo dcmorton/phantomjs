@@ -8,14 +8,22 @@ BUILD_PATH=$HOME/build
 # In case the old package URL is still being used
 sed -i 's/http\.debian\.net/httpredir\.debian\.org/g' /etc/apt/sources.list
 
+# Fixes to use the debian-archive for apt
+sed -i 's/deb\.debian\.org/archive\.debian\.org/g' /etc/apt/sources.list
+sed -i 's/security\.debian\.org/archive\.debian\.org/g' /etc/apt/sources.list
+sed -i '/wheezy-updates/d' /etc/apt/sources.list
+
+# Use acquire-check-valid-until due to issue with Releases signature being old
 echo "Installing packages for development tools..." && sleep 1
-apt-get -y update
+apt-get -o Acquire::Check-Valid-Until=false -y update
 apt-get install -y build-essential git flex bison gperf python ruby git libfontconfig1-dev
 echo
 
+# Use acquire-check-valid-until due to issue with Releases signature being old
+# Pull packages from the Debian archive repo
 echo "Preparing to download Debian source package..."
-echo "deb-src http://httpredir.debian.org/debian wheezy main" >> /etc/apt/sources.list
-apt-get -y update
+echo "deb-src http://archive.debian.org/debian wheezy main" >> /etc/apt/sources.list
+apt-get -o Acquire::Check-Valid-Until=false -y update
 echo
 
 OPENSSL_TARGET='linux-x86_64'
